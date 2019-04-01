@@ -38,7 +38,7 @@ namespace WindowsFormsApp1
         {
             InitializeComponent();
         }
-
+        123123
 
         private void btnExcellYolu_Click(object sender, EventArgs e)
         {
@@ -141,32 +141,8 @@ namespace WindowsFormsApp1
 
         }
 
-        private string matchMusteriGrubu(string str)
-        {
-            if (str.Contains(grupTekTerimliTekZamanliTicaretHaneAlcakGerilim))
-            {
-                return "Tek Terimli Tek Zamanlı Ticarethane (Alçak Gerilim)";
-            }
-            else if (str.Contains(grupTekTerimliTekZamanliTicaretHaneOrtaGerilim))
-            {
-                return "Tek Terimli Tek Zamanlı Ticarethane (Orta Gerilim)";
-            }
-            else if (str.Contains(grupTekTerimliTekZamanliSanayiAlcakGerilim))
-            {
-                return "Tek Terimli Tek Zamanlı Sanayi (Alçak Gerilim)";
-            }
-            else if (str.Contains(grupTekTerimliTekZamanliSanayiOrtaGerilim))
-            {
-                return "Tek Terimli Tek Zamanlı Sanayi (Orta Gerilim)";
-            }
-            else if (str.Contains(grupCiftTerimliTekZamanliTicaretHaneOrtaGerilim))
-            {
-                return "Çift Terimli Tek Zamanlı Ticarethane (Orta Gerilim)";
-            }
-            return "";
-        }
 
-        string aboneNo = null, donem = null, kuruluGuc = null, sozlesmeGucu = null, enerjiBedeli = null, enerjiBedeliTuketim = null, enerjiBedeliBirim = null,
+        string hesapNo = null, donem = null, kuruluGuc = null, sozlesmeGucu = null, enerjiBedeli = null, enerjiBedeliTuketim = null, enerjiBedeliBirim = null,
             enduktif = null, enduktifTuketim = null, enduktifBirim = null, kapasitif = null, kapasitifTuketim = null, kapasitifBirim = null, vergiNo = null, musteriGrubu;
 
         private void readExcelFiles(string[] excellFiles)
@@ -177,7 +153,7 @@ namespace WindowsFormsApp1
                 try
                 {
 
-                    aboneNo = null; donem = null; kuruluGuc = null; sozlesmeGucu = null; enerjiBedeli = null; enerjiBedeliTuketim = null; enerjiBedeliBirim = null;
+                    hesapNo = null; donem = null; kuruluGuc = null; sozlesmeGucu = null; enerjiBedeli = null; enerjiBedeliTuketim = null; enerjiBedeliBirim = null;
                     enduktif = null; enduktifTuketim = null; enduktifBirim = null; kapasitif = null; kapasitifTuketim = null; kapasitifBirim = null; vergiNo = null; musteriGrubu = null;
                     if (excelApp == null)
                     {
@@ -188,21 +164,14 @@ namespace WindowsFormsApp1
                     wb = excelApp.Workbooks.Open(excelFile);
                     ws = wb.Worksheets[1];
 
-                    ws.Range["A3:P4"].Merge(); //Merge Abone No
-                    cf = ws.Range["A3"]; //Merged Abone No
+                    cf = ws.Range["B4"]; //Hesap no
+                    hesapNo = cf.Text;
 
-                    aboneNo = cf.Text;
-
-                    ws.Range["A7:P8"].Merge(); //Merge Donem
-                    cf = ws.Range["A7"]; //Merged Donem
-
+                    cf = ws.Range["B7"]; //Dönem
                     donem = cf.Text;
 
-                    ws.Range["G11:AG12"].Merge(); //Merge Müşteri Grubu
-                    cf = ws.Range["G11"]; //Merged Musteri Grubu
-
-                    musteriGrubu = matchMusteriGrubu(cf.Text);
-                    //Console.WriteLine(musteriGrubu);
+                    cf = ws.Range["B9"]; //Müşteri Grubu
+                    musteriGrubu = cf.Text;
 
                     ws.Range["A19:P20"].Merge(); // İstisna kontrol
                     cf = ws.Range["A19"]; //Merged Sözleşme gücü
@@ -286,7 +255,7 @@ namespace WindowsFormsApp1
 
                     vergiNo = tempVergiNo;
 
-                    faturaOrnegi.aboneNo = aboneNo;
+                    faturaOrnegi.hesapNo = hesapNo;
                     faturaOrnegi.donem = donem;
                     faturaOrnegi.kuruluGuc = kuruluGuc;
                     faturaOrnegi.sozlesmeGucu = sozlesmeGucu;
@@ -329,11 +298,15 @@ namespace WindowsFormsApp1
                     GC.WaitForPendingFinalizers();
 
                     //  Marshal.FinalReleaseComObject(range);
+                    if (ws != null)
+                    {
+                        Marshal.FinalReleaseComObject(ws);
 
-                    Marshal.FinalReleaseComObject(ws);
 
-                    wb.Close(false, missing, missing);
-                    Marshal.FinalReleaseComObject(wb);
+                        wb.Close(false, missing, missing);
+                        Marshal.FinalReleaseComObject(wb);
+                    }
+
                 }
 
 
@@ -446,7 +419,7 @@ namespace WindowsFormsApp1
                 // ------------------------------------------------
                 // Creation of header cells
                 // ------------------------------------------------
-                workSheet.Cells[1, "A"] = "Abone No";
+                workSheet.Cells[1, "A"] = "Hesap no";
                 workSheet.Cells[1, "B"] = "Dönem";
                 workSheet.Cells[1, "C"] = "Kurulu Güç";
                 workSheet.Cells[1, "D"] = "Sözleşme Gücü";
@@ -471,7 +444,7 @@ namespace WindowsFormsApp1
                 int row = 2; // start row (in row 1 are header cells)
                 foreach (FaturaOrnegi fatura in faturas)
                 {
-                    workSheet.Cells[row, "A"] = fatura.aboneNo;
+                    workSheet.Cells[row, "A"] = fatura.hesapNo;
                     workSheet.Cells[row, "B"] = fatura.donem;
                     workSheet.Cells[row, "C"] = fatura.kuruluGuc;
                     workSheet.Cells[row, "D"] = fatura.sozlesmeGucu;
@@ -542,7 +515,7 @@ namespace WindowsFormsApp1
 
     public class FaturaOrnegi
     {
-        public string aboneNo { get; set; }
+        public string hesapNo { get; set; }
         public string donem { get; set; }
         public string kuruluGuc { get; set; }
         public string sozlesmeGucu { get; set; }
