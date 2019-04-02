@@ -22,23 +22,12 @@ namespace WindowsFormsApp1
         FaturaOrnegi faturaOrnegi;
         Excel.Range cf;
         object missing = System.Reflection.Missing.Value;
-        private const string strEnerjiBedeli = "(1(5-ø%('(/ø7h0", strEnduktif = "(1'8.7ø)", strKapasitif = ".$3$6ø7ø)",
-            grupTekTerimliTekZamanliTicaretHaneOrtaGerilim = @"7HN7HULPOL7HN=DPDQOÕ7LFDUHWKDQH2*2UWD*HULOLP",
-            grupTekTerimliTekZamanliTicaretHaneAlcakGerilim = @"7HN7HULPOL7HN=DPDQOÕ7LFDUHWKDQH$*$OoDN*HULOLP",
-            grupCiftTerimliTekZamanliTicaretHaneOrtaGerilim = @"dLIW7HULPOL7HN=DPDQOÕ7LFDUHWKDQH2*2UWD*HULOLP",
-
-            grupTekTerimliTekZamanliSanayiAlcakGerilim = @"7HN7HULPOL7HN=DPDQOÕ6DQD\L$*$OoDN*HULOLP",
-            grupTekTerimliTekZamanliSanayiOrtaGerilim = @"7HN7HULPOL7HN=DPDQOÕ6DQD\L2*2UWD*HULOLP";
-
-
-        /* grupTekTerimliTekZamanliTicaretHaneOrtaGerilim = "7HN7HULPOL7HN=DPDQOÕ7LFDUHWKDQH2*2UWD*HULOLP",
-         grupTekTerimliTekZamanliTicaretHaneOrtaGerilim = "7HN7HULPOL7HN=DPDQOÕ7LFDUHWKDQH2*2UWD*HULOLP";*/
 
         public Fatura()
         {
             InitializeComponent();
         }
-        123123
+
 
         private void btnExcellYolu_Click(object sender, EventArgs e)
         {
@@ -84,7 +73,7 @@ namespace WindowsFormsApp1
                     {
                         txtCount.ForeColor = System.Drawing.Color.Red;
                     }
-                    txtCount.Text =count.ToString();
+                    txtCount.Text = count.ToString();
 
                 }
             }
@@ -168,60 +157,38 @@ namespace WindowsFormsApp1
                     hesapNo = cf.Text;
 
                     cf = ws.Range["B7"]; //Dönem
-                    donem = cf.Text;
+                    donem = " " + cf.Text;
 
                     cf = ws.Range["B9"]; //Müşteri Grubu
                     musteriGrubu = cf.Text;
 
-                    ws.Range["A19:P20"].Merge(); // İstisna kontrol
-                    cf = ws.Range["A19"]; //Merged Sözleşme gücü
+                    cf = ws.Range["B12"]; //Kurulu Güç
+                    kuruluGuc = cf.Text;
 
-                    if (cf.Text.Contains("."))
-                    {
-                        // Console.WriteLine("İstisna" + excelFile);
-                        ws.Range["A15:P16"].Merge(); //Merge Kurulu Güç
-                        cf = ws.Range["A15"]; //Merged Kurulu Güç
-                        kuruluGuc = cf.Text;
+                    cf = ws.Range["B13"]; // Sözleşme gücü
+                    sozlesmeGucu = cf.Text;
 
-                        //    Console.WriteLine("Kurulu Güç A15"+cf.Text);
+                    string[] tempTuketim, tempBirimFiyat, tempTutar;
 
-                        ws.Range["A17:P18"].Merge(); //Merge Sözleşme  Gücü
-                        cf = ws.Range["A17"]; //Merged Sözleşme Gücü
-                        sozlesmeGucu = cf.Text;
+                    tempTuketim = ws.Range["B27"].Text.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+                    tempBirimFiyat = ws.Range["C27"].Text.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+                    tempTutar = ws.Range["D27"].Text.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
 
-                    }
-                    else
-                    {
-                        sozlesmeGucu = cf.Text;
+                    enerjiBedeliTuketim = tempTuketim[0];
+                    enerjiBedeliBirim = tempBirimFiyat[0];
+                    enerjiBedeli = tempTutar[0];
 
-                        ws.Range["A17:P18"].Merge(); //Merge Sözleşme  Gücü
-                        cf = ws.Range["A17"]; //Merged Sözleşme Gücü
-                        kuruluGuc = cf.Text;
-                    }
                     int row;
-                    row = searchStringInExcel(strEnerjiBedeli);
-                    //ws.Range
-                    // ws.Range["AG"+row+":AP"+row].Merge(); //Merge Enerji Bedeli
-                    // cf = ; //Merged Enerji Bedeli
-
-                    // enerjiBedeli = cf.Text;
-                    List<string> temp;
-                    temp = getValues(row);
-                    enerjiBedeliTuketim = temp[0];
-                    enerjiBedeliBirim = temp[1];
-                    enerjiBedeli = temp[2];
-
-
-                    row = searchStringInExcel(strEnduktif);
+                    row = searchStringInExcel("İndüktif");
 
                     if (row > 0)
                     {
-                        temp = getValues(row);
-                        enduktifTuketim = temp[0];
-                        enduktifBirim = temp[1];
-                        enduktif = temp[2];
-                    }
 
+                        enduktifTuketim = tempTuketim[2];
+                        enduktifBirim = tempBirimFiyat[2];
+                        enduktif = tempTutar[2];
+                    }
+                    /* 
                     row = searchStringInExcel(strKapasitif);
 
                     if (row > 0)
@@ -231,29 +198,11 @@ namespace WindowsFormsApp1
                         kapasitifBirim = temp[1];
                         kapasitif = temp[2];
                     }
+                    */
 
-                    Range UsedRange = ws.UsedRange;
-                    int lastUsedRow = UsedRange.Row + UsedRange.Rows.Count - 1;
+                    cf = ws.Range["B49"]; // Vergi No
+                    vergiNo = cf.Text;
 
-                    ws.Range["G" + lastUsedRow + ":P" + lastUsedRow].Merge();
-                    cf = ws.Range["G" + lastUsedRow]; //Merged VERGİ No
-                    //Console.WriteLine(lastUsedRow +" LAst row"+cf.Text);
-                    string tempVergiNo=cf.Text.Trim();
-                    long type;
-
-                    if (Int64.TryParse(tempVergiNo, out type)==false)
-                    {
-                        ws.Range["G" + (lastUsedRow - 2) + ":P" + (lastUsedRow - 1)].Merge();
-                        cf = ws.Range["G" + (lastUsedRow - 2)]; //Merged VERGİ No
-                        //Console.WriteLine(lastUsedRow + " LAst row" + cf.Text);
-                        tempVergiNo = cf.Text.Trim();
-                        if (Int64.TryParse(tempVergiNo, out type) == false)
-                        {
-                            tempVergiNo =null;
-                        }
-                     }
-
-                    vergiNo = tempVergiNo;
 
                     faturaOrnegi.hesapNo = hesapNo;
                     faturaOrnegi.donem = donem;
@@ -331,44 +280,12 @@ namespace WindowsFormsApp1
 
         }
 
-        public List<string> getValues(int row)
-        {
-            List<string> values = new List<string>();
-            Range range1 = ws.Rows[row]; //For all columns in row 1
-                                         //Range range1 = worksheet.Columns[1]; //for all rows in column 1
-
-            int count = 0;
-            foreach (Range r in range1.Cells) //range1.Cells represents all the columns/rows
-            {
-                // r is the range of the corresponding cell
-                if (r.Value2 != null)
-                {
-                    if (count == 1)
-                    {
-                        values.Add((r.Value2).ToString());
-                    }
-                    else if (count == 2)
-                    {
-                        values.Add((r.Value2).ToString());
-                    }
-                    else if (count == 3)
-                    {
-                        values.Add((r.Value2).ToString());
-                    }
-                    count++;
-
-                    //Console.Write(count + " " + (r.Value2).ToString() + " Count of column" + r.Count);
-                }
-            }
-
-            return values;
-        }
 
         public int searchStringInExcel(string find)
         {
             Excel.Range currentFind = null;
 
-            Excel.Range Fruits = excelApp.get_Range("A1", "AZ80");
+            Excel.Range Fruits = excelApp.get_Range("A1", "E53");
             // You should specify all these parameters every time you call this method,
             // since they can be overridden in the user interface.
 
@@ -461,7 +378,6 @@ namespace WindowsFormsApp1
                     workSheet.Cells[row, "M"] = fatura.kapasitif;
 
                     workSheet.Cells[row, "N"] = fatura.vergiNo;
-                    //  workSheet.Cells[row, "N"].hyperwqelink = "";
                     workSheet.Cells[row, "O"] = fatura.musteriGrubu;
                     excelCell = (Microsoft.Office.Interop.Excel.Range)workSheet.get_Range(("P" + row), ("P" + row));
                     workSheet.Hyperlinks.Add(excelCell, fatura.faturaYolu, Type.Missing, Type.Missing, fatura.faturaYolu.Substring(1 + fatura.faturaYolu.LastIndexOf(@"\")));
@@ -505,10 +421,7 @@ namespace WindowsFormsApp1
             }
         }
 
-        private void quitExcel()
-        {
 
-        }
     }
 
 
